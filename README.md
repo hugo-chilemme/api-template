@@ -3,11 +3,10 @@
 Architecture API with **0 manual route declaration**:
 
 - Folder = URL segment
-- `route.js` auto-mounted
+- HTTP files are auto-mounted by name (`get.js`, `post.js`, etc.)
 - Versioning by folders (`/api/v1`, `/api/v2`)
 - Hierarchical `layout.js` middlewares (Next.js-like)
 - Dynamic folders supported (`[id]` -> `:id`)
-- Supports `route.<method>.js` (e.g. `route.get.js`, `route.post.js`)
 
 ## Run
 
@@ -32,18 +31,18 @@ src/
       layout.js
       auth/
         layout.js
-        route.js
+        register/
+          post.js
+        login/
+          post.js
       users/
-        route.js
+        get.js
+        post.js
         [id]/
-          route.js
+          get.js
       cv/
-        route.get.js
-        route.post.js
-    v2/
-      layout.js
-      health/
-        route.js
+        get.js
+        post.js
   core/
     autoLoader.js
 ```

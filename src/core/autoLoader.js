@@ -15,6 +15,19 @@ function joinUrl(base, segment) {
   return `${base}/${toExpressSegment(segment)}`.replace(/\/+/g, '/');
 }
 
+function parseMethodFromFile(fileName) {
+  if (!fileName.endsWith('.js')) return null;
+
+  const nameWithoutExt = fileName.slice(0, -3).toLowerCase();
+  if (HTTP_METHODS.has(nameWithoutExt)) return nameWithoutExt;
+
+  const legacyMatch = fileName.match(/^route\.(\w+)\.js$/i);
+  if (!legacyMatch) return null;
+
+  const legacyMethod = legacyMatch[1].toLowerCase();
+  return HTTP_METHODS.has(legacyMethod) ? legacyMethod : null;
+}
+
 async function importModule(filePath) {
   const moduleUrl = pathToFileURL(filePath).href;
   const imported = await import(moduleUrl);
@@ -37,19 +50,10 @@ export async function loadRoutes(app, baseDir, baseUrl = '/api') {
       router.use(urlPath || '/', ...activeMiddlewares);
     }
 
-    if (names.includes('route.js')) {
-      const routePath = path.join(dir, 'route.js');
-      const routeModule = await importModule(routePath);
-      router.use(urlPath || '/', ...activeMiddlewares, routeModule);
-    }
-
     for (const entry of entries) {
       if (!entry.isFile()) continue;
-      const matched = entry.name.match(/^route\.(\w+)\.js$/);
-      if (!matched) continue;
-
-      const method = matched[1].toLowerCase();
-      if (!HTTP_METHODS.has(method)) continue;
+      const method = parseMethodFromFile(entry.name);
+      if (!method) continue;
 
       const routePath = path.join(dir, entry.name);
       const methodHandler = await importModule(routePath);
