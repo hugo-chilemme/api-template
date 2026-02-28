@@ -18,7 +18,7 @@ export async function createApp() {
   app.get('/', (_req, res) => {
     res.json({
       success: true,
-      message: 'CVODEX auto-routing API is running.',
+      message: 'Welcome to the API server!',
       routesBase: '/api/{version}/{module}'
     });
   });
