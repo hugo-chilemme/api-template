@@ -8,7 +8,7 @@ export function middleware(request) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Unsupported API version.',
+        message: 'Unsupported API version.',
         supportedVersion: API_VERSION
       },
       {
