@@ -1,0 +1,14 @@
+import { createApp } from './app.js';
+
+const PORT = process.env.PORT || 3000;
+
+createApp()
+  .then((app) => {
+    app.listen(PORT, () => {
+      console.info(`Server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to bootstrap server:', error);
+    process.exit(1);
+  });

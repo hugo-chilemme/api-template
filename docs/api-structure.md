@@ -1,71 +1,51 @@
-# Next.js API Template Structure (Folder-Based Routing)
+# Cahier des charges — Auto Routing CVODEX
 
-This template follows the **Next.js App Router** API convention where folders map directly to endpoints.
+## Objectif
 
-## Folder map
+- 0 déclaration manuelle des routes.
+- Chaque dossier devient un segment d'URL.
+- Chaque `route.js` est chargé automatiquement.
+- Support versioning (`/api/v1`, `/api/v2`).
+- Support `layout.js` hiérarchiques (middleware parent/enfant).
 
-```txt
-app/
-  layout.js                       -> root app layout
-  page.js                         -> landing page documentation
-  api/
-    v1/
-      health/
-        route.js                  -> /api/v1/health
-      users/
-        route.js                  -> /api/v1/users
-        [paramsId]/
-          route.js                -> /api/v1/users/:paramsId
-lib/
-  api-version.js                  -> controlled API version constants
-  route-layout.js                 -> before-handler API layout wrapper
-middleware.js                     -> global version validation
-jsconfig.json                     -> @/* alias path configuration
-```
+## Mapping
 
-## Alias path (`@/`)
+- `src/api/v1` -> `/api/v1`
+- `src/api/v1/auth` -> `/api/v1/auth`
+- `src/api/v1/auth/route.js` -> `/api/v1/auth`
+- `src/api/v1/users/[id]/route.js` -> `/api/v1/users/:id`
 
-Use `@/` imports to avoid relative traversal:
+## Layout middleware (équivalent Next.js)
 
-```js
-import { withApiLayout } from '@/lib/route-layout';
-import { API_VERSION } from '@/lib/api-version';
-```
+Si `layout.js` existe dans un dossier:
 
-## Route layout system (before access route)
+- il s'applique aux routes du dossier,
+- et à tous les sous-dossiers.
 
-`withApiLayout()` wraps handlers and runs before the route logic.
+Exemple automatique:
 
-Features:
+- `src/api/v1/layout.js` applique middleware sur `/api/v1/*`
+- `src/api/v1/auth/layout.js` ajoute middleware sur `/api/v1/auth/*`
 
-- Request/response logs
-- Unified error handling (`500` on unexpected errors)
-- Shared headers (`x-api-version`, `x-response-time`)
+## Fichiers route supportés
 
-Example:
+1. `route.js`
+   - attend un `express.Router()` exporté par défaut.
+2. `route.<method>.js`
+   - méthodes HTTP supportées: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`.
+   - export par défaut: `(req, res) => {}`.
 
-```js
-export const GET = withApiLayout('GET /api/v1/health', async () => {
-  return NextResponse.json({ success: true });
-});
-```
+## Loader technique
 
-## Controlled version behavior
+`src/core/autoLoader.js`:
 
-- Current API version: `v1` (`lib/api-version.js`).
-- Middleware reads `x-api-version` request header.
-- If provided and mismatched, request is rejected with status `400`.
-- API responses include `x-api-version: v1`.
+- scan récursif du dossier `src/api`
+- conversion dynamique `[id]` -> `:id`
+- composition middleware héritée (`layout.js` parent + enfant)
+- montage automatique des routes dans Express via `app.use('/api', router)`
 
-## Script commands
+## Bootstrapping
 
-```bash
-npm run dev
-npm run build
-npm run start
-npm run dev:log
-npm run build:log
-npm run start:log
-```
+`src/app.js` initialise Express et lance `loadRoutes()`.
 
-Log scripts write output into `logs/*.log`.
+`src/server.js` démarre le serveur sur `PORT` (par défaut 3000).
