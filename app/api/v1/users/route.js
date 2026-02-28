@@ -1,26 +1,19 @@
 import { NextResponse } from 'next/server';
+import { withApiLayout } from '@/lib/route-layout';
 
 const users = [
   { id: '1', name: 'Ada Lovelace', email: 'ada@example.com' },
   { id: '2', name: 'Alan Turing', email: 'alan@example.com' }
 ];
 
-/**
- * GET /api/v1/users
- * List users.
- */
-export async function GET() {
+export const GET = withApiLayout('GET /api/v1/users', async () => {
   return NextResponse.json({
     success: true,
     data: users
   });
-}
+});
 
-/**
- * POST /api/v1/users
- * Create a user.
- */
-export async function POST(request) {
+export const POST = withApiLayout('POST /api/v1/users', async (request) => {
   const body = await request.json();
 
   if (!body?.name || !body?.email) {
@@ -48,4 +41,4 @@ export async function POST(request) {
     },
     { status: 201 }
   );
-}
+});

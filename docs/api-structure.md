@@ -6,28 +6,48 @@ This template follows the **Next.js App Router** API convention where folders ma
 
 ```txt
 app/
+  layout.js                       -> root app layout
+  page.js                         -> landing page documentation
   api/
     v1/
       health/
-        route.js            -> /api/v1/health
+        route.js                  -> /api/v1/health
       users/
-        route.js            -> /api/v1/users
+        route.js                  -> /api/v1/users
         [paramsId]/
-          route.js          -> /api/v1/users/:paramsId
+          route.js                -> /api/v1/users/:paramsId
 lib/
-  api-version.js            -> controlled API version constants
-middleware.js               -> version validation + API response header
+  api-version.js                  -> controlled API version constants
+  route-layout.js                 -> before-handler API layout wrapper
+middleware.js                     -> global version validation
+jsconfig.json                     -> @/* alias path configuration
 ```
 
-## Dynamic folder: `[paramsId]`
+## Alias path (`@/`)
 
-The folder `[paramsId]` creates a route parameter automatically.
-In `app/api/v1/users/[paramsId]/route.js`, Next.js injects params:
+Use `@/` imports to avoid relative traversal:
 
 ```js
-export async function GET(request, { params }) {
-  const id = params.paramsId;
-}
+import { withApiLayout } from '@/lib/route-layout';
+import { API_VERSION } from '@/lib/api-version';
+```
+
+## Route layout system (before access route)
+
+`withApiLayout()` wraps handlers and runs before the route logic.
+
+Features:
+
+- Request/response logs
+- Unified error handling (`500` on unexpected errors)
+- Shared headers (`x-api-version`, `x-response-time`)
+
+Example:
+
+```js
+export const GET = withApiLayout('GET /api/v1/health', async () => {
+  return NextResponse.json({ success: true });
+});
 ```
 
 ## Controlled version behavior
@@ -35,30 +55,17 @@ export async function GET(request, { params }) {
 - Current API version: `v1` (`lib/api-version.js`).
 - Middleware reads `x-api-version` request header.
 - If provided and mismatched, request is rejected with status `400`.
-- All API responses include `x-api-version: v1`.
+- API responses include `x-api-version: v1`.
 
-## Example requests
+## Script commands
 
 ```bash
-# health
-curl http://localhost:3000/api/v1/health
-
-# list users
-curl http://localhost:3000/api/v1/users
-
-# get one user
-curl http://localhost:3000/api/v1/users/1
-
-# create user
-curl -X POST http://localhost:3000/api/v1/users \
-  -H "content-type: application/json" \
-  -d '{"name":"Grace Hopper","email":"grace@example.com"}'
-
-# update user
-curl -X PATCH http://localhost:3000/api/v1/users/1 \
-  -H "content-type: application/json" \
-  -d '{"name":"Ada Byron"}'
-
-# delete user
-curl -X DELETE http://localhost:3000/api/v1/users/2
+npm run dev
+npm run build
+npm run start
+npm run dev:log
+npm run build:log
+npm run start:log
 ```
+
+Log scripts write output into `logs/*.log`.

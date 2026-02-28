@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server';
+import { withApiLayout } from '@/lib/route-layout';
 
 const users = [
   { id: '1', name: 'Ada Lovelace', email: 'ada@example.com' },
   { id: '2', name: 'Alan Turing', email: 'alan@example.com' }
 ];
 
-/**
- * GET /api/v1/users/[paramsId]
- * Dynamic route using folder parameter.
- */
-export async function GET(_request, { params }) {
+export const GET = withApiLayout('GET /api/v1/users/[paramsId]', async (_request, { params }) => {
   const user = users.find((item) => item.id === params.paramsId);
 
   if (!user) {
@@ -26,13 +23,9 @@ export async function GET(_request, { params }) {
     success: true,
     data: user
   });
-}
+});
 
-/**
- * PATCH /api/v1/users/[paramsId]
- * Update user by dynamic route id.
- */
-export async function PATCH(request, { params }) {
+export const PATCH = withApiLayout('PATCH /api/v1/users/[paramsId]', async (request, { params }) => {
   const body = await request.json();
   const userIndex = users.findIndex((item) => item.id === params.paramsId);
 
@@ -56,13 +49,9 @@ export async function PATCH(request, { params }) {
     success: true,
     data: users[userIndex]
   });
-}
+});
 
-/**
- * DELETE /api/v1/users/[paramsId]
- * Delete user by dynamic route id.
- */
-export async function DELETE(_request, { params }) {
+export const DELETE = withApiLayout('DELETE /api/v1/users/[paramsId]', async (_request, { params }) => {
   const userIndex = users.findIndex((item) => item.id === params.paramsId);
 
   if (userIndex < 0) {
@@ -81,4 +70,4 @@ export async function DELETE(_request, { params }) {
     success: true,
     data: removed
   });
-}
+});

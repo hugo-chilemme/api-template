@@ -1,9 +1,22 @@
 {
   "name": "nextjs-api-template",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Folder-based Next.js API template with version control and middleware.",
+  "description": "Next.js API template with folder-based routing, route layout wrapper, middleware, and controlled versioning.",
   "scripts": {
-    "check": "node --check middleware.js && node --check lib/api-version.js && node --check app/api/v1/health/route.js && node --check app/api/v1/users/route.js && node --check app/api/v1/users/[paramsId]/route.js"
+    "dev": "next dev",
+    "dev:log": "mkdir -p logs && next dev 2>&1 | tee logs/dev.log",
+    "build": "next build",
+    "build:log": "mkdir -p logs && next build 2>&1 | tee logs/build.log",
+    "start": "next start",
+    "start:log": "mkdir -p logs && next start 2>&1 | tee logs/start.log",
+    "lint": "next lint",
+    "check": "npm run syntax",
+    "syntax": "node --check middleware.js && node --check lib/api-version.js && node --check lib/route-layout.js && node --check app/layout.js && node --check app/page.js && node --check app/api/v1/health/route.js && node --check app/api/v1/users/route.js && node --check app/api/v1/users/[paramsId]/route.js"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   }
 }
