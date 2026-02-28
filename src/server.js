@@ -1,3 +1,6 @@
+import 'dotenv/config'; // Load environment variables from .env
+import 'module-alias/register'; // Enable module aliases
+
 import { createApp } from './app.js';
 
 const PORT = process.env.PORT || 9001;
