@@ -1,6 +1,6 @@
 import { createApp } from './app.js';
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 9001;
 
 createApp()
   .then((app) => {
