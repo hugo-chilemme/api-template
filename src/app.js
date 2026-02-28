@@ -24,8 +24,13 @@ export async function createApp() {
   });
 
   app.use((error, _req, res, _next) => {
-    console.error('Unhandled error:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
+    console.error('Unhandled message:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  });
+
+  // not found handler
+  app.use((_req, res) => {
+    res.status(404).json({ success: false, message: 'The requested resource was not found' });
   });
 
   return app;

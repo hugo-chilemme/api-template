@@ -4,7 +4,7 @@ export default function authLayout(req, res, next) {
   if (!token) {
     return res.status(401).json({
       success: false,
-      error: 'Missing Authorization header.'
+      message: 'Missing Authorization header.'
     });
   }
 
