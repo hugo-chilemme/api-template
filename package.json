@@ -1,0 +1,9 @@
+{
+  "name": "nextjs-api-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Folder-based Next.js API template with version control and middleware.",
+  "scripts": {
+    "check": "node --check middleware.js && node --check lib/api-version.js && node --check app/api/v1/health/route.js && node --check app/api/v1/users/route.js && node --check app/api/v1/users/[paramsId]/route.js"
+  }
+}
