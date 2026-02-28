@@ -1,6 +1,7 @@
 import path from 'node:path';
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors'; // Add this line
 import { fileURLToPath } from 'node:url';
 import { loadRoutes } from './core/autoLoader.js';
 
@@ -10,6 +11,7 @@ const __dirname = path.dirname(__filename);
 export async function createApp() {
   const app = express();
 
+  app.use(cors()); // Add this line to enable CORS
   app.use(express.json());
   app.use(morgan('dev'));
 
